@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🐱 喵喵大小写转换器 - Case Converter</title>
+<style>
+  /* ===== Reset & Base ===== */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --peach: #ff9a9e;
+    --sky: #a1c4fd;
+    --purple: #c2a8fd;
+    --mint: #84fab0;
+    --sunny: #fbc2eb;
+    --card-bg: rgba(255,255,255,0.92);
+    --text: #3d3055;
+    --muted: #7b6f91;
+    --radius: 18px;
+    --shadow: 0 8px 32px rgba(0,0,0,0.08);
+  }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    background: linear-gradient(135deg, #ff9a9e 0%, #fad0c4 20%, #a1c4fd 50%, #c2a8fd 80%, #fbc2eb 100%);
+    background-attachment: fixed;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    padding: 20px;
+    color: var(--text);
+    line-height: 1.6;
+  }
+
+  /* ===== Cat Mascot ===== */
+  .cat-mascot {
+    position: fixed;
+    top: 16px;
+    right: 24px;
+    z-index: 100;
+    animation: catBounce 2.5s cubic-bezier(0.34,1.56,0.64,1) infinite;
+  }
+  .cat-face {
+    width: 52px; height: 44px;
+    background: #ffcc80;
+    border-radius: 50% 50% 45% 45%;
+    position: relative;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+  }
+  .cat-ear-l, .cat-ear-r {
+    position: absolute;
+    top: -14px;
+    width: 0; height: 0;
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-bottom: 18px solid #ffcc80;
+  }
+  .cat-ear-l { left: 4px; transform: rotate(-18deg); }
+  .cat-ear-r { right: 4px; transform: rotate(18deg); }
+  .cat-ear-l::after, .cat-ear-r::after {
+    content: '';
+    position: absolute;
+    top: 4px; left: -6px;
+    width: 0; height: 0;
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    border-bottom: 12px solid #ffab91;
+  }
+  .cat-eye-l, .cat-eye-r {
+    position: absolute;
+    top: 14px;
+    width: 10px; height: 11px;
+    background: #3d3055;
+    border-radius: 50%;
+    animation: catBlink 4s ease-in-out infinite;
+  }
+  .cat-eye-l { left: 10px; }
+  .cat-eye-r { right: 10px; }
+  .cat-nose {
+    position: absolute;
+    top: 22px; left: 50%;
+    transform: translateX(-50%);
+    width: 0; height: 0;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-top: 5px solid #ff8a80;
+  }
+  .cat-mouth-l, .cat-mouth-r {
+    position: absolute;
+    top: 26px;
+    width: 10px; height: 6px;
+    border-bottom: 2px solid #e0a080;
+    border-radius: 0 0 50% 50%;
+  }
+  .cat-mouth-l { left: 11px; border-right: 2px solid #e0a080; }
+  .cat-mouth-r { right: 11px; border-left: 2px solid #e0a080; }
+  .cat-speech {
+    position: absolute;
+    top: -42px; right: 58px;
+    background: white;
+    padding: 6px 14px;
+    border-radius: 16px;
+    font-size: 13px;
+    white-space: nowrap;
+    box-shadow: 0 3px 12px rgba(0,0,0,0.1);
+    animation: speechFloat 3s ease-in-out infinite;
+  }
+  .cat-speech::after {
+    content: '';
+    position: absolute;
+    bottom: -6px; right: 12px;
+    width: 0; height: 0;
+    border-left: 7px solid transparent;
+    border-right: 7px solid transparent;
+    border-top: 7px solid white;
+  }
+
+  @keyframes catBounce {
+    0%, 100% { transform: translateY(0); }
+    15% { transform: translateY(-12px); }
+    30% { transform: translateY(0); }
+    45% { transform: translateY(-5px); }
+    60% { transform: translateY(0); }
+  }
+  @keyframes catBlink {
+    0%, 48%, 52%, 100% { transform: scaleY(1); }
+    50% { transform: scaleY(0.1); }
+  }
+  @keyframes speechFloat {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-4px); }
+  }
+
+  /* ===== Main Container ===== */
+  .app-container {
+    width: 100%;
+    max-width: 720px;
+    margin-top: 50px;
+  }
+
+  /* ===== Header ===== */
+  .header {
+    text-align: center;
+    margin-bottom: 24px;
+  }
+  .header h1 {
+    font-size: 2rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, #ff6b6b, #845ef7, #339af0);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 4px;
+  }
+  .header .subtitle {
+    font-size: 0.9rem;
+    color: var(--muted);
+  }
+
+  /* ===== Card ===== */
+  .card {
+    background: var(--card-bg);
+    backdrop-filter: blur(16px);
+    border-radius: var(--radius);
+    padding: 24px;
+    margin-bottom: 16px;
+    box-shadow: var(--shadow);
+    border: 1px solid rgba(255,255,255,0.6);
+    transition: box-shadow 0.3s;
+  }
+  .card:hover { box-shadow: 0 12px 40px rgba(0,0,0,0.1); }
+  .card-label {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  /* ===== Textarea ===== */
+  textarea {
+    width: 100%;
+    min-height: 160px;
+    border: 2px dashed #dcc8e8;
+    border-radius: 14px;
+    padding: 16px;
+    font-size: 1rem;
+    font-family: 'SF Mono', 'Cascadia Code', 'Consolas', 'PingFang SC', monospace;
+    line-height: 1.7;
+    resize: vertical;
+    background: #fefcff;
+    color: var(--text);
+    transition: border-color 0.3s, box-shadow 0.3s;
+    outline: none;
+  }
+  textarea:focus {
+    border-color: #a1c4fd;
+    box-shadow: 0 0 0 4px rgba(161,196,253,0.25);
+  }
+  textarea::placeholder {
+    color: #c8b8d8;
+  }
+
+  /* ===== Stats Bar ===== */
+  .stats-bar {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-top: 10px;
+    font-size: 0.82rem;
+    color: var(--muted);
+  }
+  .stats-bar span {
+    background: #f6f0ff;
+    padding: 4px 12px;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .btn-clear {
+    margin-left: auto;
+    background: none;
+    border: 1.5px solid #e0d0f0;
+    color: var(--muted);
+    padding: 4px 14px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 0.82rem;
+    transition: all 0.2s;
+  }
+  .btn-clear:hover { background: #ffeaea; border-color: #ffabab; color: #e06060; }
+
+  /* ===== Button Grid ===== */
+  .btn-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+    gap: 10px;
+  }
+  .convert-btn {
+    padding: 12px 10px;
+    border: none;
+    border-radius: 14px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.25s cubic-bezier(0.34,1.56,0.64,1);
+    color: white;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.12);
+    position: relative;
+    overflow: hidden;
+  }
+  .convert-btn:hover {
+    transform: translateY(-3px) scale(1.04);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.18);
+  }
+  .convert-btn:active {
+    transform: translateY(0) scale(0.97);
+    transition: all 0.08s;
+  }
+  .convert-btn:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+  }
+  /* Button colors — each gets its own hue */
+  .btn-upper     { background: linear-gradient(135deg, #ff6b6b, #ee5a24); }
+  .btn-lower     { background: linear-gradient(135deg, #48dbfb, #0abde3); }
+  .btn-title     { background: linear-gradient(135deg, #ff9ff3, #f368e0); }
+  .btn-sentence  { background: linear-gradient(135deg, #feca57, #ff9f43); }
+  .btn-toggle    { background: linear-gradient(135deg, #54a0ff, #2e86de); }
+  .btn-camel     { background: linear-gradient(135deg, #5f27cd, #341f97); }
+  .btn-pascal    { background: linear-gradient(135deg, #6c5ce7, #a29bfe); }
+  .btn-snake     { background: linear-gradient(135deg, #00b894, #00cec9); }
+  .btn-kebab     { background: linear-gradient(135deg, #e17055, #d63031); }
+  .btn-constant  { background: linear-gradient(135deg, #636e72, #2d3436); }
+
+  /* ===== Result Area ===== */
+  .result-box {
+    width: 100%;
+    min-height: 80px;
+    background: #fefcff;
+    border: 2px solid #e8e0f8;
+    border-radius: 14px;
+    padding: 18px;
+    font-size: 1rem;
+    font-family: 'SF Mono', 'Cascadia Code', 'Consolas', 'PingFang SC', monospace;
+    line-height: 1.7;
+    word-break: break-all;
+    color: var(--text);
+    transition: border-color 0.3s;
+    position: relative;
+  }
+  .result-box.has-content { border-color: #84fab0; }
+  .result-box .placeholder {
+    color: #c8b8d8;
+    font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  }
+
+  /* ===== Action Buttons ===== */
+  .action-row {
+    display: flex;
+    gap: 10px;
+    margin-top: 12px;
+    flex-wrap: wrap;
+  }
+  .btn-action {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 25px;
+    font-size: 0.88rem;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.25s cubic-bezier(0.34,1.56,0.64,1);
+  }
+  .btn-copy {
+    background: linear-gradient(135deg, #84fab0, #8fd3f4);
+    color: #1a5c3a;
+  }
+  .btn-download {
+    background: linear-gradient(135deg, #fbc2eb, #a6c1ee);
+    color: #4a3060;
+  }
+  .btn-action:hover {
+    transform: translateY(-2px) scale(1.03);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.13);
+  }
+  .btn-action:active { transform: scale(0.96); transition: all 0.08s; }
+
+  /* Toast */
+  .toast {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%) translateY(100px);
+    background: #3d3055;
+    color: white;
+    padding: 12px 28px;
+    border-radius: 30px;
+    font-weight: 700;
+    font-size: 0.9rem;
+    z-index: 200;
+    opacity: 0;
+    transition: all 0.35s cubic-bezier(0.34,1.56,0.64,1);
+    pointer-events: none;
+    box-shadow: 0 8px 28px rgba(0,0,0,0.2);
+  }
+  .toast.show {
+    transform: translateX(-50%) translateY(0);
+    opacity: 1;
+  }
+
+  /* ===== Mode badge ===== */
+  .mode-badge {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 10px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    margin-bottom: 8px;
+    color: white;
+  }
+
+  /* ===== Footer ===== */
+  .footer {
+    text-align: center;
+    margin-top: 24px;
+    padding: 16px;
+    color: var(--muted);
+    font-size: 0.82rem;
+  }
+  .footer a { color: #845ef7; text-decoration: none; font-weight: 600; }
+  .footer a:hover { text-decoration: underline; }
+
+  /* ===== Responsive ===== */
+  @media (max-width: 600px) {
+    .app-container { margin-top: 30px; }
+    .header h1 { font-size: 1.5rem; }
+    .btn-grid { grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 8px; }
+    .convert-btn { padding: 10px 8px; font-size: 0.78rem; }
+    .card { padding: 16px; }
+    textarea { min-height: 130px; font-size: 0.9rem; }
+    .cat-mascot { top: 8px; right: 10px; }
+    .cat-face { width: 40px; height: 34px; }
+    .cat-speech { font-size: 11px; top: -36px; right: 44px; padding: 4px 10px; }
+    .cat-ear-l, .cat-ear-r { top: -11px; border-left-width: 8px; border-right-width: 8px; border-bottom-width: 14px; }
+    .cat-eye-l, .cat-eye-r { top: 11px; width: 8px; height: 9px; }
+    .cat-eye-l { left: 8px; } .cat-eye-r { right: 8px; }
+    .cat-nose { top: 17px; border-left-width: 4px; border-right-width: 4px; border-top-width: 4px; }
+    .cat-mouth-l, .cat-mouth-r { top: 21px; width: 8px; height: 5px; }
+    .cat-mouth-l { left: 9px; } .cat-mouth-r { right: 9px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Cat Mascot -->
+<div class="cat-mascot">
+  <div class="cat-speech" id="catSpeech">喵~试试粘贴文字吧！</div>
+  <div class="cat-face">
+    <div class="cat-ear-l"></div>
+    <div class="cat-ear-r"></div>
+    <div class="cat-eye-l"></div>
+    <div class="cat-eye-r"></div>
+    <div class="cat-nose"></div>
+    <div class="cat-mouth-l"></div>
+    <div class="cat-mouth-r"></div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<!-- App -->
+<div class="app-container">
+  <div class="header">
+    <h1>🐱 喵喵大小写转换器</h1>
+    <p class="subtitle">粘贴文字，一键变换大小写！</p>
+  </div>
+
+  <!-- Input Card -->
+  <div class="card">
+    <div class="card-label">📝 输入文字</div>
+    <textarea id="inputText" placeholder="在这里粘贴或输入你的文字...&#10;喵~我会帮你转换成各种大小写格式！"></textarea>
+    <div class="stats-bar">
+      <span>📊 字数: <strong id="wordCount">0</strong></span>
+      <span>🔤 字符: <strong id="charCount">0</strong></span>
+      <button class="btn-clear" id="btnClear" title="清空输入">✕ 清空</button>
+    </div>
+  </div>
+
+  <!-- Conversion Buttons -->
+  <div class="card">
+    <div class="card-label">🎨 选择转换模式</div>
+    <div class="btn-grid" id="btnGrid">
+      <button class="convert-btn btn-upper"    data-mode="upper"    >UPPERCASE<br><small>全部大写</small></button>
+      <button class="convert-btn btn-lower"    data-mode="lower"    >lowercase<br><small>全部小写</small></button>
+      <button class="convert-btn btn-title"    data-mode="title"    >Title Case<br><small>单词首字母大写</small></button>
+      <button class="convert-btn btn-sentence" data-mode="sentence" >Sentence case<br><small>句子首字母大写</small></button>
+      <button class="convert-btn btn-toggle"   data-mode="toggle"   >tOGGLE cASE<br><small>大小写反转</small></button>
+      <button class="convert-btn btn-camel"    data-mode="camel"    >camelCase<br><small>驼峰命名</small></button>
+      <button class="convert-btn btn-pascal"   data-mode="pascal"   >PascalCase<br><small>帕斯卡命名</small></button>
+      <button class="convert-btn btn-snake"    data-mode="snake"    >snake_case<br><small>下划线连接</small></button>
+      <button class="convert-btn btn-kebab"    data-mode="kebab"    >kebab-case<br><small>短横线连接</small></button>
+      <button class="convert-btn btn-constant" data-mode="constant" >CONSTANT_CASE<br><small>常量命名</small></button>
+    </div>
+  </div>
+
+  <!-- Result Card -->
+  <div class="card">
+    <div class="card-label">✨ 转换结果 <span class="mode-badge" id="modeBadge" style="display:none;"></span></div>
+    <div class="result-box" id="resultBox">
+      <span class="placeholder">选择上方转换模式，结果将在这里显示~ 🐾</span>
+    </div>
+    <div class="stats-bar" style="margin-top:12px;">
+      <span>📊 结果字数: <strong id="resultWordCount">0</strong></span>
+      <span>🔤 结果字符: <strong id="resultCharCount">0</strong></span>
+    </div>
+    <div class="action-row">
+      <button class="btn-action btn-copy" id="btnCopy" disabled>
+        📋 一键复制
+      </button>
+      <button class="btn-action btn-download" id="btnDownload" disabled>
+        💾 下载为 .txt
+      </button>
+    </div>
+  </div>
+
+  <div class="footer">
+    喵喵大小写转换器 · 完全在浏览器本地运行，不上传任何数据 ·
+    <a href="https://github.com" target="_blank" rel="noopener">GitHub</a>
+  </div>
+</div>
+
+<script>
+// ============================================================
+//  Case Conversion Engine
+// ============================================================
+
+const converters = {
+  upper(text) {
+    return text.toUpperCase();
+  },
+
+  lower(text) {
+    return text.toLowerCase();
+  },
+
+  title(text) {
+    return text.replace(/\b\w+/g, word =>
+      word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
+    );
+  },
+
+  sentence(text) {
+    return text.replace(/(^|[.!?]\s+)([a-z])/g, (_, p, c) => p + c.toUpperCase())
+               .replace(/^[a-z]/, c => c.toUpperCase());
+  },
+
+  toggle(text) {
+    return text.replace(/[a-zA-Z]/g, c =>
+      c === c.toUpperCase() ? c.toLowerCase() : c.toUpperCase()
+    );
+  },
+
+  camel(text) {
+    // Split on non-alphanumeric chars, lowercase first word, title-case rest
+    const words = text.split(/[^a-zA-Z0-9]+/).filter(Boolean);
+    if (words.length === 0) return '';
+    return words[0].toLowerCase() +
+           words.slice(1).map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join('');
+  },
+
+  pascal(text) {
+    const words = text.split(/[^a-zA-Z0-9]+/).filter(Boolean);
+    return words.map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join('');
+  },
+
+  snake(text) {
+    return text.replace(/[^a-zA-Z0-9]+/g, ' ')
+               .trim()
+               .replace(/\s+/g, '_')
+               .toLowerCase();
+  },
+
+  kebab(text) {
+    return text.replace(/[^a-zA-Z0-9]+/g, ' ')
+               .trim()
+               .replace(/\s+/g, '-')
+               .toLowerCase();
+  },
+
+  constant(text) {
+    return text.replace(/[^a-zA-Z0-9]+/g, ' ')
+               .trim()
+               .replace(/\s+/g, '_')
+               .toUpperCase();
+  }
+};
+
+const modeNames = {
+  upper:    'UPPERCASE',
+  lower:    'lowercase',
+  title:    'Title Case',
+  sentence: 'Sentence case',
+  toggle:   'tOGGLE cASE',
+  camel:    'camelCase',
+  pascal:   'PascalCase',
+  snake:    'snake_case',
+  kebab:    'kebab-case',
+  constant: 'CONSTANT_CASE'
+};
+
+const badgeColors = {
+  upper:    'background:#ff6b6b;',
+  lower:    'background:#0abde3;',
+  title:    'background:#f368e0;',
+  sentence: 'background:#ff9f43;',
+  toggle:   'background:#2e86de;',
+  camel:    'background:#5f27cd;',
+  pascal:   'background:#6c5ce7;',
+  snake:    'background:#00b894;',
+  kebab:    'background:#d63031;',
+  constant: 'background:#2d3436;'
+};
+
+// ============================================================
+//  DOM References
+// ============================================================
+const inputText   = document.getElementById('inputText');
+const resultBox   = document.getElementById('resultBox');
+const btnCopy     = document.getElementById('btnCopy');
+const btnDownload = document.getElementById('btnDownload');
+const btnClear    = document.getElementById('btnClear');
+const wordCount   = document.getElementById('wordCount');
+const charCount   = document.getElementById('charCount');
+const resultWordCount = document.getElementById('resultWordCount');
+const resultCharCount = document.getElementById('resultCharCount');
+const modeBadge   = document.getElementById('modeBadge');
+const catSpeech   = document.getElementById('catSpeech');
+const toast       = document.getElementById('toast');
+const btnGrid     = document.getElementById('btnGrid');
+
+let currentResult = '';
+let currentMode   = '';
+
+// ============================================================
+//  Helpers
+// ============================================================
+function countWords(text) {
+  if (!text.trim()) return 0;
+  return text.trim().split(/\s+/).length;
+}
+
+function updateInputStats() {
+  const text = inputText.value;
+  wordCount.textContent = countWords(text);
+  charCount.textContent = text.length;
+}
+
+function updateResultStats(text) {
+  resultWordCount.textContent = countWords(text);
+  resultCharCount.textContent = text.length;
+}
+
+function showToast(msg) {
+  toast.textContent = msg;
+  toast.classList.add('show');
+  clearTimeout(toast._timeout);
+  toast._timeout = setTimeout(() => toast.classList.remove('show'), 1800);
+}
+
+// ============================================================
+//  Conversion
+// ============================================================
+function doConvert(mode) {
+  const text = inputText.value;
+  if (!text.trim()) {
+    resultBox.innerHTML = '<span class="placeholder">喵？还没有输入文字呢~ 请先在上面输入一些文字吧！🐾</span>';
+    btnCopy.disabled = true;
+    btnDownload.disabled = true;
+    modeBadge.style.display = 'none';
+    currentResult = '';
+    currentMode = '';
+    updateResultStats('');
+    catSpeech.textContent = '喵？先输入文字呀！';
+    return;
+  }
+
+  currentMode = mode;
+  currentResult = converters[mode](text);
+  resultBox.textContent = currentResult;
+  resultBox.classList.add('has-content');
+  btnCopy.disabled = false;
+  btnDownload.disabled = false;
+  updateResultStats(currentResult);
+
+  // Update mode badge
+  modeBadge.textContent = modeNames[mode];
+  modeBadge.style.cssText = badgeColors[mode] + 'display:inline-block;';
+
+  // Cat reactions
+  const reactions = {
+    upper:    '嗷呜！全部大写了！📢',
+    lower:    '喵~全部变小写了呢！🌊',
+    title:    '每个词都戴上帽子啦！🎩',
+    sentence: '句子开头整齐多了！✨',
+    toggle:   '大小写反转，好神奇！🪄',
+    camel:    '驼峰命名，像骆驼的背！🐪',
+    pascal:   '帕斯卡命名，每个词都大写！🏛️',
+    snake:    '下划线连接，蛇蛇爬过~🐍',
+    kebab:    '短横线串起来，像烤肉串！🍢',
+    constant: '全大写加下划线，常量风格！🔊'
+  };
+  catSpeech.textContent = reactions[mode] || '喵~转换完成啦！';
+}
+
+// ============================================================
+//  Event Listeners
+// ============================================================
+
+// Input typing
+inputText.addEventListener('input', () => {
+  updateInputStats();
+  if (currentMode && inputText.value.trim()) {
+    // Re-convert with current mode for live preview
+    doConvert(currentMode);
+  }
+});
+
+// Clear button
+btnClear.addEventListener('click', () => {
+  inputText.value = '';
+  resultBox.innerHTML = '<span class="placeholder">选择上方转换模式，结果将在这里显示~ 🐾</span>';
+  resultBox.classList.remove('has-content');
+  btnCopy.disabled = true;
+  btnDownload.disabled = true;
+  modeBadge.style.display = 'none';
+  currentResult = '';
+  currentMode = '';
+  updateInputStats();
+  updateResultStats('');
+  catSpeech.textContent = '喵~清空了，重新开始吧！';
+  inputText.focus();
+});
+
+// Conversion buttons — delegated click
+btnGrid.addEventListener('click', (e) => {
+  const btn = e.target.closest('.convert-btn');
+  if (!btn) return;
+  const mode = btn.dataset.mode;
+  if (mode) doConvert(mode);
+});
+
+// Copy button
+btnCopy.addEventListener('click', async () => {
+  if (!currentResult) return;
+  try {
+    await navigator.clipboard.writeText(currentResult);
+    showToast('✅ 已复制到剪贴板！喵~');
+    catSpeech.textContent = '复制成功！喵喵~📋';
+  } catch {
+    // Fallback for older browsers
+    const ta = document.createElement('textarea');
+    ta.value = currentResult;
+    ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    showToast('✅ 已复制到剪贴板！');
+  }
+});
+
+// Download button
+btnDownload.addEventListener('click', () => {
+  if (!currentResult) return;
+  const blob = new Blob([currentResult], { type: 'text/plain;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  const timestamp = new Date().toISOString().slice(0, 10);
+  a.download = `case-converter-${currentMode}-${timestamp}.txt`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  showToast('💾 文件下载中...');
+  catSpeech.textContent = '喵~文件已下载！💾';
+});
+
+// Keyboard shortcut: Ctrl+Enter to trigger most recent conversion
+document.addEventListener('keydown', (e) => {
+  if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+    e.preventDefault();
+    if (currentMode) {
+      doConvert(currentMode);
+    } else {
+      // Default to lowercase if no mode selected yet
+      doConvert('lower');
+    }
+  }
+});
+
+// ============================================================
+//  Init
+// ============================================================
+updateInputStats();
+resultWordCount.textContent = '0';
+resultCharCount.textContent = '0';
+</script>
+</body>
+</html>
