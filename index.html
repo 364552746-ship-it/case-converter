@@ -19,6 +19,31 @@
     --muted: #7b6f91;
     --radius: 18px;
     --shadow: 0 8px 32px rgba(0,0,0,0.08);
+    --input-bg: #fefcff;
+    --input-border: #dcc8e8;
+    --chip-bg: #f6f0ff;
+    --placeholder: #c8b8d8;
+    --result-border: #e8e0f8;
+    --speech-bg: #ffffff;
+    --hairline: #e0d0f0;
+    --toast-bg: #3d3055;
+  }
+
+  /* ===== Dark Mode ===== */
+  body.dark {
+    --card-bg: rgba(42, 36, 60, 0.92);
+    --text: #efe9ff;
+    --muted: #b6a9d4;
+    --input-bg: #2e2840;
+    --input-border: #4a3f66;
+    --chip-bg: #3a3350;
+    --placeholder: #8a7fa8;
+    --result-border: #4a3f66;
+    --speech-bg: #3d3055;
+    --hairline: #4a3f66;
+    --toast-bg: #6b5d92;
+    background: linear-gradient(135deg, #2b2140 0%, #3a2f52 25%, #2e3a5c 55%, #44355e 80%, #3a2744 100%);
+    background-attachment: fixed;
   }
 
   body {
@@ -98,7 +123,7 @@
   .cat-speech {
     position: absolute;
     top: -42px; right: 58px;
-    background: white;
+    background: var(--speech-bg);
     padding: 6px 14px;
     border-radius: 16px;
     font-size: 13px;
@@ -113,7 +138,7 @@
     width: 0; height: 0;
     border-left: 7px solid transparent;
     border-right: 7px solid transparent;
-    border-top: 7px solid white;
+    border-top: 7px solid var(--speech-bg);
   }
 
   @keyframes catBounce {
@@ -186,14 +211,14 @@
   textarea {
     width: 100%;
     min-height: 160px;
-    border: 2px dashed #dcc8e8;
+    border: 2px dashed var(--input-border);
     border-radius: 14px;
     padding: 16px;
     font-size: 1rem;
     font-family: 'SF Mono', 'Cascadia Code', 'Consolas', 'PingFang SC', monospace;
     line-height: 1.7;
     resize: vertical;
-    background: #fefcff;
+    background: var(--input-bg);
     color: var(--text);
     transition: border-color 0.3s, box-shadow 0.3s;
     outline: none;
@@ -203,7 +228,7 @@
     box-shadow: 0 0 0 4px rgba(161,196,253,0.25);
   }
   textarea::placeholder {
-    color: #c8b8d8;
+    color: var(--placeholder);
   }
 
   /* ===== Stats Bar ===== */
@@ -216,7 +241,7 @@
     color: var(--muted);
   }
   .stats-bar span {
-    background: #f6f0ff;
+    background: var(--chip-bg);
     padding: 4px 12px;
     border-radius: 20px;
     display: flex;
@@ -226,7 +251,7 @@
   .btn-clear {
     margin-left: auto;
     background: none;
-    border: 1.5px solid #e0d0f0;
+    border: 1.5px solid var(--hairline);
     color: var(--muted);
     padding: 4px 14px;
     border-radius: 20px;
@@ -235,6 +260,7 @@
     transition: all 0.2s;
   }
   .btn-clear:hover { background: #ffeaea; border-color: #ffabab; color: #e06060; }
+  body.dark .btn-clear:hover { background: #4a3f66; border-color: #ff9a9e; color: #ffabab; }
 
   /* ===== Button Grid ===== */
   .btn-grid {
@@ -280,13 +306,21 @@
   .btn-snake     { background: linear-gradient(135deg, #00b894, #00cec9); }
   .btn-kebab     { background: linear-gradient(135deg, #e17055, #d63031); }
   .btn-constant  { background: linear-gradient(135deg, #636e72, #2d3436); }
+  .btn-dot           { background: linear-gradient(135deg, #7bed9f, #2ed573); }
+  .btn-path          { background: linear-gradient(135deg, #70a1ff, #1e90ff); }
+  .btn-train         { background: linear-gradient(135deg, #ff7f50, #ff6348); }
+  .btn-cobol         { background: linear-gradient(135deg, #747d8c, #2f3542); }
+  .btn-pascal-snake  { background: linear-gradient(135deg, #be2edd, #e056fd); }
+  .btn-spaced        { background: linear-gradient(135deg, #00d2d3, #01a3a4); }
+  .btn-to-halfwidth  { background: linear-gradient(135deg, #f0932b, #f9ca24); }
+  .btn-to-fullwidth  { background: linear-gradient(135deg, #fd79a8, #e84393); }
 
   /* ===== Result Area ===== */
   .result-box {
     width: 100%;
     min-height: 80px;
-    background: #fefcff;
-    border: 2px solid #e8e0f8;
+    background: var(--input-bg);
+    border: 2px solid var(--result-border);
     border-radius: 14px;
     padding: 18px;
     font-size: 1rem;
@@ -299,7 +333,7 @@
   }
   .result-box.has-content { border-color: #84fab0; }
   .result-box .placeholder {
-    color: #c8b8d8;
+    color: var(--placeholder);
     font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei', sans-serif;
   }
 
@@ -330,11 +364,35 @@
     background: linear-gradient(135deg, #fbc2eb, #a6c1ee);
     color: #4a3060;
   }
+  .btn-sendback {
+    background: linear-gradient(135deg, #ffd3a5, #fd6585);
+    color: #5a2d2d;
+  }
   .btn-action:hover {
     transform: translateY(-2px) scale(1.03);
     box-shadow: 0 6px 20px rgba(0,0,0,0.13);
   }
   .btn-action:active { transform: scale(0.96); transition: all 0.08s; }
+
+  /* ===== Theme Toggle ===== */
+  .btn-theme {
+    position: fixed;
+    top: 16px;
+    left: 24px;
+    z-index: 100;
+    background: var(--card-bg);
+    border: 1.5px solid var(--hairline);
+    color: var(--text);
+    padding: 8px 16px;
+    border-radius: 24px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-weight: 700;
+    backdrop-filter: blur(10px);
+    box-shadow: var(--shadow);
+    transition: all 0.2s;
+  }
+  .btn-theme:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.15); }
 
   /* Toast */
   .toast {
@@ -342,7 +400,7 @@
     bottom: 30px;
     left: 50%;
     transform: translateX(-50%) translateY(100px);
-    background: #3d3055;
+    background: var(--toast-bg);
     color: white;
     padding: 12px 28px;
     border-radius: 30px;
@@ -403,6 +461,9 @@
 </head>
 <body>
 
+<!-- Theme Toggle -->
+<button class="btn-theme" id="themeToggle" title="切换深色/浅色模式">🌙 深色</button>
+
 <!-- Cat Mascot -->
 <div class="cat-mascot">
   <div class="cat-speech" id="catSpeech">喵~试试粘贴文字吧！</div>
@@ -452,6 +513,21 @@
       <button class="convert-btn btn-snake"    data-mode="snake"    >snake_case<br><small>下划线连接</small></button>
       <button class="convert-btn btn-kebab"    data-mode="kebab"    >kebab-case<br><small>短横线连接</small></button>
       <button class="convert-btn btn-constant" data-mode="constant" >CONSTANT_CASE<br><small>常量命名</small></button>
+      <button class="convert-btn btn-dot"          data-mode="dot"         >dot.case<br><small>点连接</small></button>
+      <button class="convert-btn btn-path"         data-mode="path"        >path/case<br><small>斜杠连接</small></button>
+      <button class="convert-btn btn-train"        data-mode="train"       >Train-Case<br><small>短横线首字母大写</small></button>
+      <button class="convert-btn btn-cobol"        data-mode="cobol"       >COBOL-CASE<br><small>短横线全大写</small></button>
+      <button class="convert-btn btn-pascal-snake" data-mode="pascal_snake">Pascal_Snake<br><small>下划线首字母大写</small></button>
+      <button class="convert-btn btn-spaced"       data-mode="spaced"      >SPACED CASE<br><small>空格全大写</small></button>
+    </div>
+  </div>
+
+  <!-- Full/Half Width Card -->
+  <div class="card">
+    <div class="card-label">🔤 全角 / 半角转换</div>
+    <div class="btn-grid">
+      <button class="convert-btn btn-to-halfwidth" data-mode="toHalfwidth">全角 → 半角<br><small>ＡＢＣ１２３ → ABC123</small></button>
+      <button class="convert-btn btn-to-fullwidth" data-mode="toFullwidth">半角 → 全角<br><small>ABC123 → ＡＢＣ１２３</small></button>
     </div>
   </div>
 
@@ -471,6 +547,9 @@
       </button>
       <button class="btn-action btn-download" id="btnDownload" disabled>
         💾 下载为 .txt
+      </button>
+      <button class="btn-action btn-sendback" id="btnSendBack" disabled>
+        🔄 回填输入框
       </button>
     </div>
   </div>
@@ -544,6 +623,58 @@ const converters = {
                .trim()
                .replace(/\s+/g, '_')
                .toUpperCase();
+  },
+
+  dot(text) {
+    return text.replace(/[^a-zA-Z0-9]+/g, ' ')
+               .trim()
+               .replace(/\s+/g, '.')
+               .toLowerCase();
+  },
+
+  path(text) {
+    return text.replace(/[^a-zA-Z0-9]+/g, ' ')
+               .trim()
+               .replace(/\s+/g, '/')
+               .toLowerCase();
+  },
+
+  train(text) {
+    return text.replace(/[^a-zA-Z0-9]+/g, ' ')
+               .trim()
+               .replace(/\s+/g, '-')
+               .replace(/(^|-)([a-z])/g, (_, p, c) => p + c.toUpperCase());
+  },
+
+  cobol(text) {
+    return text.replace(/[^a-zA-Z0-9]+/g, ' ')
+               .trim()
+               .replace(/\s+/g, '-')
+               .toUpperCase();
+  },
+
+  pascal_snake(text) {
+    const words = text.split(/[^a-zA-Z0-9]+/).filter(Boolean);
+    return words.map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join('_');
+  },
+
+  spaced(text) {
+    return text.replace(/[^a-zA-Z0-9]+/g, ' ')
+               .trim()
+               .replace(/\s+/g, ' ')
+               .toUpperCase();
+  },
+
+  toHalfwidth(text) {
+    return text.replace(/[！-～]/g, ch =>
+      String.fromCharCode(ch.charCodeAt(0) - 0xFEE0)
+    ).replace(/　/g, ' ');
+  },
+
+  toFullwidth(text) {
+    return text.replace(/[!-~]/g, ch =>
+      String.fromCharCode(ch.charCodeAt(0) + 0xFEE0)
+    ).replace(/ /g, '　');
   }
 };
 
@@ -557,7 +688,15 @@ const modeNames = {
   pascal:   'PascalCase',
   snake:    'snake_case',
   kebab:    'kebab-case',
-  constant: 'CONSTANT_CASE'
+  constant: 'CONSTANT_CASE',
+  dot:          'dot.case',
+  path:         'path/case',
+  train:        'Train-Case',
+  cobol:        'COBOL-CASE',
+  pascal_snake: 'Pascal_Snake',
+  spaced:       'SPACED CASE',
+  toHalfwidth:  '全角 → 半角',
+  toFullwidth:  '半角 → 全角'
 };
 
 const badgeColors = {
@@ -570,7 +709,15 @@ const badgeColors = {
   pascal:   'background:#6c5ce7;',
   snake:    'background:#00b894;',
   kebab:    'background:#d63031;',
-  constant: 'background:#2d3436;'
+  constant: 'background:#2d3436;',
+  dot:          'background:#2ed573;',
+  path:         'background:#1e90ff;',
+  train:        'background:#ff6348;',
+  cobol:        'background:#2f3542;',
+  pascal_snake: 'background:#be2edd;',
+  spaced:       'background:#00d2d3;',
+  toHalfwidth:  'background:#f0932b;',
+  toFullwidth:  'background:#e84393;'
 };
 
 // ============================================================
@@ -589,6 +736,8 @@ const modeBadge   = document.getElementById('modeBadge');
 const catSpeech   = document.getElementById('catSpeech');
 const toast       = document.getElementById('toast');
 const btnGrid     = document.getElementById('btnGrid');
+const btnSendBack = document.getElementById('btnSendBack');
+const themeToggle = document.getElementById('themeToggle');
 
 let currentResult = '';
 let currentMode   = '';
@@ -628,6 +777,7 @@ function doConvert(mode) {
     resultBox.innerHTML = '<span class="placeholder">喵？还没有输入文字呢~ 请先在上面输入一些文字吧！🐾</span>';
     btnCopy.disabled = true;
     btnDownload.disabled = true;
+    btnSendBack.disabled = true;
     modeBadge.style.display = 'none';
     currentResult = '';
     currentMode = '';
@@ -642,6 +792,7 @@ function doConvert(mode) {
   resultBox.classList.add('has-content');
   btnCopy.disabled = false;
   btnDownload.disabled = false;
+  btnSendBack.disabled = false;
   updateResultStats(currentResult);
 
   // Update mode badge
@@ -684,6 +835,7 @@ btnClear.addEventListener('click', () => {
   resultBox.classList.remove('has-content');
   btnCopy.disabled = true;
   btnDownload.disabled = true;
+  btnSendBack.disabled = true;
   modeBadge.style.display = 'none';
   currentResult = '';
   currentMode = '';
@@ -749,6 +901,28 @@ document.addEventListener('keydown', (e) => {
       doConvert('lower');
     }
   }
+});
+
+// Send back to input (chain conversion)
+btnSendBack.addEventListener('click', () => {
+  if (!currentResult) return;
+  inputText.value = currentResult;
+  updateInputStats();
+  catSpeech.textContent = '喵~结果送回输入框，可以继续转换！🔄';
+  inputText.focus();
+  inputText.setSelectionRange(inputText.value.length, inputText.value.length);
+});
+
+// Theme toggle (dark mode) with persistence
+function applyTheme(dark) {
+  document.body.classList.toggle('dark', dark);
+  themeToggle.textContent = dark ? '☀️ 浅色' : '🌙 深色';
+  localStorage.setItem('theme', dark ? 'dark' : 'light');
+}
+const savedTheme = localStorage.getItem('theme');
+if (savedTheme === 'dark') applyTheme(true);
+themeToggle.addEventListener('click', () => {
+  applyTheme(!document.body.classList.contains('dark'));
 });
 
 // ============================================================
